@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "Vintage Wooden Chair",
+    "price": 2500,
+    "material": "Oak Wood",
+    "category": "Furniture",
+    "stock": 5,
+    "fragile": false,
+    "imageKey": "chair"
+  },
+  {
+    "id": 2,
+    "name": "Antique Glass Vase",
+    "price": 1800,
+    "material": "Glass",
+    "category": "Decor",
+    "stock": 8,
+    "fragile": true,
+    "imageKey": "vase"
+  },
+  {
+    "id": 3,
+    "name": "Classic Wall Clock",
+    "price": 3200,
+    "material": "Wood and Metal",
+    "category": "Decor",
+    "stock": 3,
+    "fragile": false,
+    "imageKey": "clock"
+  },
+  {
+    "id": 4,
+    "name": "Porcelain Tea Set",
+    "price": 4200,
+    "material": "Porcelain",
+    "category": "Kitchenware",
+    "stock": 4,
+    "fragile": true,
+    "imageKey": "teaSet"
+  },
+  {
+    "id": 5,
+    "name": "Antique Wooden Table",
+    "price": 7500,
+    "material": "Mahogany Wood",
+    "category": "Furniture",
+    "stock": 2,
+    "fragile": false,
+    "imageKey": "table"
+  }
+]
