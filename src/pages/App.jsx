@@ -1,122 +1,98 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "../assets/react.svg";
+import viteLogo from "../assets/vite.svg";
+import heroImg from "../assets/hero.png";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div>
+      <section className="container py-5">
+        <div className="row align-items-center">
+          <div className="col-md-6">
+            <h1 className="display-4 fw-bold mb-3">Antique Shop</h1>
 
-      <div className="ticks"></div>
+            <p className="lead text-muted mb-4">
+              Welcome to our antique shop. Discover classic furniture, vintage
+              decor, and fragile handmade items for elegant homes.
+            </p>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+            <button
+              type="button"
+              className="btn btn-primary btn-lg"
+              onClick={() => setCount((count) => count + 1)}
+            >
+              Start Shopping {count}
+            </button>
+          </div>
+
+          <div className="col-md-6 text-center">
+            <img
+              src={heroImg}
+              alt="Antique hero"
+              className="img-fluid rounded shadow"
+              style={{ maxHeight: "350px", objectFit: "cover" }}
+            />
+          </div>
         </div>
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <section className="container py-5">
+        <h2 className="text-center mb-4">Our Collections</h2>
+
+        <div className="row">
+          <div className="col-md-6 mb-4">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <img
+                  src={viteLogo}
+                  alt="Furniture icon"
+                  width="60"
+                  className="mb-3"
+                />
+
+                <h3>Antique Furniture</h3>
+
+                <p className="text-muted">
+                  Classic wooden chairs, tables, cabinets, and timeless home
+                  pieces.
+                </p>
+
+                <a href="#" className="btn btn-outline-primary">
+                  Browse Furniture
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 mb-4">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <img
+                  src={reactLogo}
+                  alt="Decor icon"
+                  width="60"
+                  className="mb-3"
+                />
+
+                <h3>Fragile Decor</h3>
+
+                <p className="text-muted">
+                  Glass vases, porcelain pieces, and handmade decorations that
+                  need special care.
+                </p>
+
+                <a href="#" className="btn btn-outline-primary">
+                  View Collection
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
 
-export default App
+export default App;
