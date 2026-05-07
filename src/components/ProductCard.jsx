@@ -1,32 +1,42 @@
-function ProductCard({ product }) {
+import { Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
+
+function ProductCard({ product, addToCart }) {
+  const { t, productName } = useLanguage();
+
+  function handleAddToCart() {
+    addToCart(product);
+  }
+
   return (
-    <div className="card h-100 shadow-sm">
-      <div className="card-body">
-        <h5 className="card-title">{product.name}</h5>
+    <div className="product-card">
+      <div className="product-image-box">
+        <img src={product.image} alt={productName(product.name)} />
+      </div>
 
-        <p className="card-text">
-          <strong>Material:</strong> {product.material}
-        </p>
+      <div className="product-content">
+        <div className="product-topline">
+          <span>{product.category}</span>
+          {product.fragile && <b>{t.products.fragile}</b>}
+        </div>
 
-        <p className="card-text">
-          <strong>Category:</strong> {product.category}
-        </p>
+        <h3>{productName(product.name)}</h3>
 
-        <p className="card-text">
-          <strong>Stock:</strong> {product.stock}
-        </p>
+        <p>{product.description}</p>
 
-        <p className="fw-bold">{product.price} EGP</p>
+        <div className="product-footer">
+          <strong>{product.price} EGP</strong>
+        </div>
 
-        {product.fragile && (
-          <div className="alert alert-warning py-2">
-            Fragile item - handle with care
-          </div>
-        )}
+        <div className="product-actions">
+          <Link to={`/product/${product.id}`}>
+            <button type="button">{t.products.viewDetails}</button>
+          </Link>
 
-        <button className="btn btn-primary w-100">
-          Add to Cart
-        </button>
+          <button type="button" onClick={handleAddToCart}>
+            {t.products.addToCart}
+          </button>
+        </div>
       </div>
     </div>
   );
