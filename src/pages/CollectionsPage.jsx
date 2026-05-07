@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 function CollectionsPage({ categories }) {
   const navigate = useNavigate();
+  const { t, categoryName } = useLanguage();
 
   function openCategory(category) {
     if (category === "All") {
@@ -16,9 +18,9 @@ function CollectionsPage({ categories }) {
     <section className="section-block collections-section">
       <div className="container">
         <div className="section-heading">
-          <span>Curated Categories</span>
-          <h2>Explore Antique Collections</h2>
-          <p>Browse by category and discover pieces that match your home style.</p>
+          <span>{t.collections.label}</span>
+          <h2>{t.collections.title}</h2>
+          <p>{t.collections.description}</p>
         </div>
 
         <div className="row">
@@ -30,11 +32,13 @@ function CollectionsPage({ categories }) {
                 onClick={() => openCategory(category)}
               >
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{category}</strong>
+
+                <strong>{categoryName(category)}</strong>
+
                 <small>
                   {category === "All"
-                    ? "View the full collection"
-                    : `Browse ${category}`}
+                    ? t.collections.allCollection
+                    : `${t.collections.browse} ${categoryName(category)}`}
                 </small>
               </button>
             </div>

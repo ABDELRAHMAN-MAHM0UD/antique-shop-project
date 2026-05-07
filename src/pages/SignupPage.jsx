@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import { useLanguage } from "../context/LanguageContext";
 
 function SignupPage({ onSignUp, onGuest }) {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   function handleSignUpSubmit(event) {
     onSignUp(event);
@@ -17,32 +19,32 @@ function SignupPage({ onSignUp, onGuest }) {
   return (
     <AuthLayout>
       <div className="auth-tabs">
-        <Link to="/">Login</Link>
+        <Link to="/">{t.auth.login}</Link>
 
         <button type="button" className="active">
-          Sign Up
+          {t.auth.signup}
         </button>
       </div>
 
       <div className="auth-title">
-        <span>Join The Collection</span>
-        <h2>Create your account</h2>
-        <p>Start exploring rare pieces and premium antique products.</p>
+        <span>{t.auth.joinCollection}</span>
+        <h2>{t.auth.signupTitle}</h2>
+        <p>{t.auth.signupText}</p>
       </div>
 
       <form onSubmit={handleSignUpSubmit} className="auth-form">
         <label>
-          Full Name
+          {t.auth.fullName}
           <input
             name="name"
             type="text"
-            placeholder="Enter your full name"
+            placeholder={t.auth.fullName}
             required
           />
         </label>
 
         <label>
-          Email Address
+          {t.auth.email}
           <input
             name="email"
             type="email"
@@ -52,26 +54,26 @@ function SignupPage({ onSignUp, onGuest }) {
         </label>
 
         <label>
-          Password
+          {t.auth.password}
           <input
             name="password"
             type="password"
-            placeholder="Create a strong password"
+            placeholder={t.auth.password}
             required
           />
         </label>
 
         <button type="submit" className="primary-auth-button">
-          Create Account
+          {t.auth.createAccount}
         </button>
       </form>
 
       <button type="button" className="guest-button" onClick={handleGuestClick}>
-        Continue as Guest
+        {t.auth.guest}
       </button>
 
       <p className="switch-auth">
-        Already have an account? <Link to="/">Login</Link>
+        {t.auth.haveAccount} <Link to="/">{t.auth.login}</Link>
       </p>
     </AuthLayout>
   );

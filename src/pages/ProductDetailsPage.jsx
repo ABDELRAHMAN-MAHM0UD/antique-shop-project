@@ -1,8 +1,11 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 function ProductDetailsPage({ products, addToCart }) {
   const { productId } = useParams();
   const navigate = useNavigate();
+
+  const { t, productName, categoryName, materialName } = useLanguage();
 
   const product = products.find((item) => String(item.id) === productId);
 
@@ -11,10 +14,10 @@ function ProductDetailsPage({ products, addToCart }) {
       <section className="section-block products-section">
         <div className="container">
           <div className="empty-state">
-            Product not found or still loading.
+            {t.products.notFound}
             <br />
             <br />
-            <Link to="/products">Back to products</Link>
+            <Link to="/products">{t.products.backProducts}</Link>
           </div>
         </div>
       </section>
@@ -30,49 +33,50 @@ function ProductDetailsPage({ products, addToCart }) {
     <section className="section-block products-section">
       <div className="container">
         <div className="section-heading">
-          <span>{product.category}</span>
-          <h2>{product.name}</h2>
-          <p>Inspect the piece details before adding it to your collection.</p>
+          <span>{categoryName(product.category)}</span>
+          <h2>{productName(product.name)}</h2>
+          <p>{t.products.inspect}</p>
         </div>
 
         <div className="row align-items-center">
           <div className="col-lg-6 mb-4">
             <div className="product-card">
               <div className="modal-product-image">
-                <img src={product.image} alt={product.name} />
+                <img src={product.image} alt={productName(product.name)} />
               </div>
             </div>
           </div>
 
           <div className="col-lg-6 mb-4">
             <div className="story-panel">
-              <span>Product Details</span>
+              <span>{t.products.productDetails}</span>
 
-              <h2>{product.name}</h2>
+              <h2>{productName(product.name)}</h2>
 
               <p>
-                This antique piece is made from{" "}
-                <strong>{product.material}</strong>. It is currently in stock
-                with <strong>{product.stock}</strong> available item(s).
+                {t.products.detailText}{" "}
+                <strong>{materialName(product.material)}</strong>.{" "}
+                {t.products.available} <strong>{product.stock}</strong>{" "}
+                {t.products.availableItems}
               </p>
 
               {product.fragile && (
                 <div className="fragile-warning">
-                  Fragile item: needs special handling and careful packaging.
+                  {t.products.fragileWarning}
                 </div>
               )}
 
               <h3>{product.price} EGP</h3>
 
               <button type="button" onClick={handleAddToCart}>
-                Add to Cart
+                {t.products.addToCart}
               </button>
 
               <br />
               <br />
 
               <Link to="/products" style={{ color: "#f5e6c8" }}>
-                Back to products
+                {t.products.backProducts}
               </Link>
             </div>
           </div>

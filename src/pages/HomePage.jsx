@@ -1,7 +1,21 @@
 import { Link } from "react-router-dom";
 import heroImg from "../assets/hero.png";
+import { useLanguage } from "../context/LanguageContext";
 
 function HomePage() {
+  const { t } = useLanguage();
+
+  const sliderItems = [
+    t.nav.products,
+    t.nav.collections,
+    t.story.fragileCare,
+    t.home.classicClock,
+    t.home.rarePieces,
+    t.story.authenticity,
+    t.home.protectedPackaging,
+    t.home.antiqueItems,
+  ];
+
   return (
     <section id="home" className="hero-section">
       <div className="hero-grid"></div>
@@ -11,39 +25,36 @@ function HomePage() {
       <div className="container hero-inner">
         <div className="row align-items-center">
           <div className="col-lg-6">
-            <span className="hero-label">Classic • Curated • Rare</span>
+            <span className="hero-label">{t.home.label}</span>
 
-            <h1>Antique Pieces That Bring History Into Your Home</h1>
+            <h1>{t.home.title}</h1>
 
-            <p>
-              A premium marketplace for vintage furniture, fragile decor,
-              porcelain sets, classic clocks, and timeless handmade treasures.
-            </p>
+            <p>{t.home.description}</p>
 
             <div className="hero-buttons">
               <Link to="/products">
-                <button type="button">Shop Now</button>
+                <button type="button">{t.home.shopNow}</button>
               </Link>
 
               <Link to="/collections">
-                <button type="button">Explore Collections</button>
+                <button type="button">{t.home.exploreCollections}</button>
               </Link>
             </div>
 
             <div className="hero-stats">
               <div>
                 <strong>500+</strong>
-                <span>Antique Items</span>
+                <span>{t.home.antiqueItems}</span>
               </div>
 
               <div>
                 <strong>80+</strong>
-                <span>Rare Pieces</span>
+                <span>{t.home.rarePieces}</span>
               </div>
 
               <div>
                 <strong>48h</strong>
-                <span>Careful Delivery</span>
+                <span>{t.home.carefulDelivery}</span>
               </div>
             </div>
           </div>
@@ -55,13 +66,13 @@ function HomePage() {
               <div className="shine-layer"></div>
 
               <div className="hero-note note-one">
-                <span>New Arrival</span>
-                <strong>Classic Wall Clock</strong>
+                <span>{t.home.newArrival}</span>
+                <strong>{t.home.classicClock}</strong>
               </div>
 
               <div className="hero-note note-two">
-                <span>Fragile Care</span>
-                <strong>Protected Packaging</strong>
+                <span>{t.home.fragileCare}</span>
+                <strong>{t.home.protectedPackaging}</strong>
               </div>
             </div>
           </div>
@@ -69,15 +80,18 @@ function HomePage() {
       </div>
 
       <div className="moving-strip">
-        <div>
-          <span>Vintage Furniture</span>
-          <span>Fragile Decor</span>
-          <span>Porcelain Sets</span>
-          <span>Classic Clocks</span>
-          <span>Rare Collectibles</span>
-          <span>Handmade Treasures</span>
-          <span>Vintage Furniture</span>
-          <span>Fragile Decor</span>
+        <div className="moving-track">
+          <div className="moving-group">
+            {sliderItems.map((item, index) => (
+              <span key={`first-${index}`}>{item}</span>
+            ))}
+          </div>
+
+          <div className="moving-group" aria-hidden="true">
+            {sliderItems.map((item, index) => (
+              <span key={`second-${index}`}>{item}</span>
+            ))}
+          </div>
         </div>
       </div>
     </section>

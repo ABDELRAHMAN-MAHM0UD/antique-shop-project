@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
@@ -11,6 +12,8 @@ import ProductDetailsPage from "./ProductDetailsPage";
 import StoryPage from "./StoryPage";
 import ContactPage from "./ContactPage";
 import CartPage from "./CartPage";
+
+import { useLanguage } from "../context/LanguageContext";
 
 import chairImg from "../assets/products/chair.png";
 import vaseImg from "../assets/products/vase.png";
@@ -34,7 +37,32 @@ function ProtectedRoute({ isLoggedIn, children }) {
   return children;
 }
 
+function PageFrame({
+  isLoggedIn,
+  userName,
+  cartCount,
+  onLogout,
+  footerText,
+  children,
+}) {
+  return (
+    <ProtectedRoute isLoggedIn={isLoggedIn}>
+      <div className="site-page">
+        <Navbar userName={userName} cartCount={cartCount} onLogout={onLogout} />
+
+        {children}
+
+        <footer className="footer">
+          <p>{footerText}</p>
+        </footer>
+      </div>
+    </ProtectedRoute>
+  );
+}
+
 function App() {
+  const { t } = useLanguage();
+
   const [isLoggedIn, setIsLoggedIn] = useState(() =>
     Boolean(localStorage.getItem("antiqueUser"))
   );
@@ -45,8 +73,11 @@ function App() {
 
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [toast, setToast] = useState("");
+  const [toast, setToast] = useState(null);
   const [orderMessage, setOrderMessage] = useState("");
+  const [lastOrder, setLastOrder] = useState(null);
+
+  const toastTimer = useRef(null);
 
   useEffect(() => {
     fetch("/data.json")
@@ -62,11 +93,28 @@ function App() {
       .catch((error) => console.error("Error loading products:", error));
   }, []);
 
-  function showToast(message) {
-    setToast(message);
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) {
+        clearTimeout(toastTimer.current);
+      }
+    };
+  }, []);
 
-    setTimeout(() => {
-      setToast("");
+  function showToast(message) {
+    const toastTop = window.scrollY + window.innerHeight / 2;
+
+    setToast({
+      message,
+      top: toastTop,
+    });
+
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    toastTimer.current = setTimeout(() => {
+      setToast(null);
     }, 2600);
   }
 
@@ -80,7 +128,7 @@ function App() {
     localStorage.setItem("antiqueUser", name);
     setUserName(name);
     setIsLoggedIn(true);
-    showToast("Welcome back to Antique Shop.");
+    showToast(t.messages.welcomeBack);
   }
 
   function handleSignUp(event) {
@@ -92,14 +140,14 @@ function App() {
     localStorage.setItem("antiqueUser", name);
     setUserName(name);
     setIsLoggedIn(true);
-    showToast("Account created successfully.");
+    showToast(t.messages.accountCreated);
   }
 
   function continueAsGuest() {
     localStorage.setItem("antiqueUser", "Guest");
     setUserName("Guest");
     setIsLoggedIn(true);
-    showToast("Continuing as guest.");
+    showToast(t.messages.guestMode);
   }
 
   function handleLogout() {
@@ -107,7 +155,8 @@ function App() {
     setIsLoggedIn(false);
     setUserName("Guest");
     setCartItems([]);
-    showToast("Logged out successfully.");
+    setLastOrder(null);
+    showToast(t.messages.loggedOut);
   }
 
   function addToCart(product) {
@@ -125,7 +174,7 @@ function App() {
       return [...currentItems, { ...product, quantity: 1 }];
     });
 
-    showToast(`${product.name} added to cart.`);
+    showToast("Added to cart successfully");
   }
 
   function decreaseQuantity(productId) {
@@ -153,26 +202,38 @@ function App() {
       currentItems.filter((item) => item.id !== productId)
     );
 
-    showToast("Item removed from cart.");
+    showToast(t.messages.removedFromCart);
   }
 
   function clearCart() {
     setCartItems([]);
-    showToast("Cart cleared.");
+    showToast(t.messages.cartCleared);
   }
 
-  function handleCheckout() {
+  function handleCheckout(orderDetails = {}) {
     if (cartItems.length === 0) {
-      showToast("Your cart is empty.");
+      showToast(t.messages.emptyCart);
       return;
     }
 
+    const orderNumber = `AS-${Date.now().toString().slice(-6)}`;
+
+    setLastOrder({
+      orderNumber,
+      total: cartTotal,
+      ...orderDetails,
+    });
+
     setOrderMessage(
-      "Order placed successfully. Your antique pieces are being prepared with special care."
+      `Your order has been placed successfully. Order number: ${orderNumber}`
     );
 
     setCartItems([]);
-    showToast("Checkout completed successfully.");
+    showToast(t.messages.checkoutDone);
+  }
+
+  function closeOrderMessage() {
+    setOrderMessage("");
   }
 
   const categories = useMemo(() => {
@@ -187,25 +248,13 @@ function App() {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  function PageFrame({ children }) {
-    return (
-      <ProtectedRoute isLoggedIn={isLoggedIn}>
-        <div className="site-page">
-          <Navbar
-            userName={userName}
-            cartCount={cartCount}
-            onLogout={handleLogout}
-          />
-
-          {children}
-
-          <footer className="footer">
-            <p>© 2026 Antique Shop. Timeless treasures, lasting value.</p>
-          </footer>
-        </div>
-      </ProtectedRoute>
-    );
-  }
+  const pageFrameProps = {
+    isLoggedIn,
+    userName,
+    cartCount,
+    onLogout: handleLogout,
+    footerText: t.footer,
+  };
 
   return (
     <BrowserRouter>
@@ -231,10 +280,7 @@ function App() {
             isLoggedIn ? (
               <Navigate to="/home" replace />
             ) : (
-              <SignupPage
-                onSignUp={handleSignUp}
-                onGuest={continueAsGuest}
-              />
+              <SignupPage onSignUp={handleSignUp} onGuest={continueAsGuest} />
             )
           }
         />
@@ -242,7 +288,7 @@ function App() {
         <Route
           path="/home"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <HomePage />
             </PageFrame>
           }
@@ -251,7 +297,7 @@ function App() {
         <Route
           path="/collections"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <CollectionsPage categories={categories} />
             </PageFrame>
           }
@@ -260,7 +306,7 @@ function App() {
         <Route
           path="/products"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <ProductsPage
                 products={products}
                 categories={categories}
@@ -273,7 +319,7 @@ function App() {
         <Route
           path="/product/:productId"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <ProductDetailsPage products={products} addToCart={addToCart} />
             </PageFrame>
           }
@@ -282,7 +328,7 @@ function App() {
         <Route
           path="/story"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <StoryPage />
             </PageFrame>
           }
@@ -291,7 +337,7 @@ function App() {
         <Route
           path="/contact"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <ContactPage showToast={showToast} />
             </PageFrame>
           }
@@ -300,7 +346,7 @@ function App() {
         <Route
           path="/cart"
           element={
-            <PageFrame>
+            <PageFrame {...pageFrameProps}>
               <CartPage
                 cartItems={cartItems}
                 cartTotal={cartTotal}
@@ -323,25 +369,48 @@ function App() {
             <button
               type="button"
               className="modal-close"
-              onClick={() => setOrderMessage("")}
+              onClick={closeOrderMessage}
             >
               ×
             </button>
 
             <div className="success-icon">✓</div>
 
-            <h2>Order Confirmed</h2>
+            <h2>{t.cart.checkout}</h2>
 
             <p>{orderMessage}</p>
 
-            <button type="button" onClick={() => setOrderMessage("")}>
-              Continue Shopping
+            {lastOrder && (
+              <div className="review-box">
+                <div>
+                  <span>Order Number</span>
+                  <strong>{lastOrder.orderNumber}</strong>
+                </div>
+
+                <div>
+                  <span>Total</span>
+                  <strong>{lastOrder.total} EGP</strong>
+                </div>
+              </div>
+            )}
+
+            <button type="button" onClick={closeOrderMessage}>
+              {t.cart.continueShopping}
             </button>
           </div>
         </div>
       )}
 
-      {toast && <div className="toast-message">{toast}</div>}
+      {toast &&
+        createPortal(
+          <div
+            className="toast-message"
+            style={{ "--toast-top": `${toast.top}px` }}
+          >
+            {toast.message}
+          </div>,
+          document.body
+        )}
     </BrowserRouter>
   );
 }

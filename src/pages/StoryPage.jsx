@@ -1,22 +1,21 @@
 import { Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 function StoryPage() {
+  const { t } = useLanguage();
+
   return (
     <section className="section-block story-section">
       <div className="container">
         <div className="row align-items-center">
           <div className="col-lg-6 mb-4">
             <div className="story-panel">
-              <span>Our Story</span>
-              <h2>Every antique piece carries a memory.</h2>
-              <p>
-                Antique Shop focuses on rare, elegant, and carefully selected
-                pieces. Fragile items are marked clearly, and each product is
-                presented with its material, category, stock, and care level.
-              </p>
+              <span>{t.story.label}</span>
+              <h2>{t.story.title}</h2>
+              <p>{t.story.description}</p>
 
               <Link to="/products">
-                <button type="button">Browse Pieces</button>
+                <button type="button">{t.story.browsePieces}</button>
               </Link>
             </div>
           </div>
@@ -24,23 +23,23 @@ function StoryPage() {
           <div className="col-lg-6">
             <div className="care-grid">
               <div>
-                <strong>Authenticity</strong>
-                <span>Selected classic pieces</span>
+                <strong>{t.story.authenticity}</strong>
+                <span>{t.story.authenticityText}</span>
               </div>
 
               <div>
-                <strong>Fragile Care</strong>
-                <span>Special packing for delicate items</span>
+                <strong>{t.story.fragileCare}</strong>
+                <span>{t.story.fragileCareText}</span>
               </div>
 
               <div>
-                <strong>Premium Feel</strong>
-                <span>Elegant shopping interface</span>
+                <strong>{t.story.premiumFeel}</strong>
+                <span>{t.story.premiumFeelText}</span>
               </div>
 
               <div>
-                <strong>Simple Checkout</strong>
-                <span>Fast cart and order flow</span>
+                <strong>{t.story.checkout}</strong>
+                <span>{t.story.checkoutText}</span>
               </div>
             </div>
           </div>
