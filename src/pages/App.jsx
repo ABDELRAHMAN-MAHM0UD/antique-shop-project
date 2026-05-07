@@ -2,6 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import heroImg from "../assets/hero.png";
 import logoImg from "../assets/logo.png";
 
+import chairImg from "../assets/products/chair.png";
+import vaseImg from "../assets/products/vase.png";
+import clockImg from "../assets/products/clock.png";
+import teaSetImg from "../assets/products/tea-set.png";
+import tableImg from "../assets/products/table.png";
+
+const productImages = {
+  chair: chairImg,
+  vase: vaseImg,
+  clock: clockImg,
+  teaSet: teaSetImg,
+  table: tableImg,
+};
+
 function App() {
   const [authMode, setAuthMode] = useState("login");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,7 +33,14 @@ function App() {
   useEffect(() => {
     fetch("/data.json")
       .then((response) => response.json())
-      .then((data) => setProducts(data))
+      .then((data) => {
+        const productsWithImages = data.map((product) => ({
+          ...product,
+          image: productImages[product.imageKey],
+        }));
+
+        setProducts(productsWithImages);
+      })
       .catch((error) => console.error("Error loading products:", error));
   }, []);
 
@@ -344,7 +365,9 @@ function App() {
 
                   <button
                     type="button"
-                    onClick={() => showToast("Password recovery is not connected yet.")}
+                    onClick={() =>
+                      showToast("Password recovery is not connected yet.")
+                    }
                   >
                     Forgot password?
                   </button>
@@ -478,9 +501,7 @@ function App() {
             <div className="col-lg-6">
               <span className="hero-label">Classic • Curated • Rare</span>
 
-              <h1>
-                Antique Pieces That Bring History Into Your Home
-              </h1>
+              <h1>Antique Pieces That Bring History Into Your Home</h1>
 
               <p>
                 A premium marketplace for vintage furniture, fragile decor,
@@ -628,7 +649,13 @@ function App() {
             {filteredProducts.map((product) => (
               <div className="col-lg-4 col-md-6 mb-4" key={product.id}>
                 <article className="product-card">
-                  <div className="product-icon">{getProductIcon(product)}</div>
+                  {product.image ? (
+                    <div className="product-image-box">
+                      <img src={product.image} alt={product.name} />
+                    </div>
+                  ) : (
+                    <div className="product-icon">{getProductIcon(product)}</div>
+                  )}
 
                   <div className="product-content">
                     <div className="product-topline">
@@ -819,7 +846,13 @@ function App() {
               ×
             </button>
 
-            <div className="modal-icon">{getProductIcon(selectedProduct)}</div>
+            {selectedProduct.image ? (
+              <div className="modal-product-image">
+                <img src={selectedProduct.image} alt={selectedProduct.name} />
+              </div>
+            ) : (
+              <div className="modal-icon">{getProductIcon(selectedProduct)}</div>
+            )}
 
             <span>{selectedProduct.category}</span>
 

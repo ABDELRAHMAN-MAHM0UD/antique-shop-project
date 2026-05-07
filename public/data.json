@@ -5,8 +5,9 @@
     "price": 2500,
     "material": "Oak Wood",
     "category": "Furniture",
+    "stock": 5,
     "fragile": false,
-    "stock": 5
+    "imageKey": "chair"
   },
   {
     "id": 2,
@@ -14,8 +15,9 @@
     "price": 1800,
     "material": "Glass",
     "category": "Decor",
+    "stock": 8,
     "fragile": true,
-    "stock": 8
+    "imageKey": "vase"
   },
   {
     "id": 3,
@@ -23,8 +25,9 @@
     "price": 3200,
     "material": "Wood and Metal",
     "category": "Decor",
+    "stock": 3,
     "fragile": false,
-    "stock": 3
+    "imageKey": "clock"
   },
   {
     "id": 4,
@@ -32,8 +35,9 @@
     "price": 4200,
     "material": "Porcelain",
     "category": "Kitchenware",
+    "stock": 4,
     "fragile": true,
-    "stock": 4
+    "imageKey": "teaSet"
   },
   {
     "id": 5,
@@ -41,7 +45,8 @@
     "price": 7500,
     "material": "Mahogany Wood",
     "category": "Furniture",
+    "stock": 2,
     "fragile": false,
-    "stock": 2
+    "imageKey": "table"
   }
 ]
