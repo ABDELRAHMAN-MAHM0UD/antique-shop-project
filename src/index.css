@@ -2298,3 +2298,122 @@ button {
   display: block !important;
   border-radius: 22px !important;
 }
+
+.nav-menu a {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background: none;
+  color: rgba(255, 250, 242, 0.8);
+  font-weight: 850;
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition: 0.25s ease;
+  text-decoration: none;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+  color: #17252a;
+  background: #d7b377;
+  transform: translateY(-3px);
+}
+
+.nav-actions a {
+  text-decoration: none;
+  border: none;
+  padding: 9px 15px;
+  border-radius: 999px;
+  font-weight: 900;
+  transition: 0.25s ease;
+}
+
+.nav-actions a:hover {
+  transform: translateY(-3px);
+}
+
+.auth-tabs a {
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  padding: 13px;
+  border-radius: 14px;
+  background: transparent;
+  font-weight: 950;
+  color: #6b7280;
+  transition: 0.25s ease;
+}
+
+.auth-tabs a:hover {
+  color: #17252a;
+  background: #f5e6c8;
+}
+
+.switch-auth a {
+  color: #8b6f47;
+  font-weight: 950;
+  text-decoration: none;
+}
+
+.hero-buttons a,
+.story-panel a,
+.product-actions a {
+  text-decoration: none;
+}
+
+.product-actions a button {
+  width: 100%;
+}
+
+.nav-menu a {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background: none;
+  color: rgba(255, 250, 242, 0.8);
+  font-weight: 850;
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition: 0.25s ease;
+  text-decoration: none;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+  color: #17252a;
+  background: #d7b377;
+  transform: translateY(-3px);
+}
+
+.nav-actions a {
+  text-decoration: none;
+  border: none;
+  padding: 9px 15px;
+  border-radius: 999px;
+  font-weight: 900;
+  transition: 0.25s ease;
+}
+
+.nav-actions a:hover {
+  transform: translateY(-3px);
+}
+
+.site-page {
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.site-navbar {
+  flex-shrink: 0 !important;
+}
+
+.site-page > .section-block,
+.site-page > .hero-section {
+  flex: 1 0 auto !important;
+}
+
+.footer {
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
+}
