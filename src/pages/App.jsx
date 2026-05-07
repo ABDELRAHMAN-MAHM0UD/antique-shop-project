@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "../assets/react.svg";
 import viteLogo from "../assets/vite.svg";
 import heroImg from "../assets/hero.png";
+import ProductCard from "../components/ProductCard";
 
 function App() {
   const [count, setCount] = useState(0);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("/data.json")
+      .then((response) => response.json())
+      .then((data) => setProducts(data))
+      .catch((error) => console.error("Error loading products:", error));
+  }, []);
 
   return (
     <div>
@@ -19,7 +28,12 @@ function App() {
             </p>
 
             <button
-              type="button"
+              type=" shop. Discover classic furniture, vintage
+              decor, and fragile handmade items for elegant homes.
+            </p>
+
+            <button
+button"
               className="btn btn-primary btn-lg"
               onClick={() => setCount((count) => count + 1)}
             >
@@ -59,7 +73,7 @@ function App() {
                   pieces.
                 </p>
 
-                <a href="#" className="btn btn-outline-primary">
+                <a href="#products" className="btn btn-outline-primary">
                   Browse Furniture
                 </a>
               </div>
@@ -83,12 +97,24 @@ function App() {
                   need special care.
                 </p>
 
-                <a href="#" className="btn btn-outline-primary">
+                <a href="#products" className="btn btn-outline-primary">
                   View Collection
                 </a>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="products" className="container py-5">
+        <h2 className="text-center mb-4">Available Products</h2>
+
+        <div className="row">
+          {products.map((product) => (
+            <div className="col-md-4 mb-4" key={product.id}>
+              <ProductCard product={product} />
+            </div>
+          ))}
         </div>
       </section>
     </div>
