@@ -3,6 +3,7 @@ import logoImg from "../assets/logo.png";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 
+
 function Navbar({ userName, cartCount, onLogout }) {
   const { t, toggleLanguage } = useLanguage();
   const { isDarkTheme, toggleTheme } = useTheme();
