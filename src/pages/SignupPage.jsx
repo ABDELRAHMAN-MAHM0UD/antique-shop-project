@@ -1,4 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 import AuthLayout from "../components/AuthLayout";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -6,13 +8,40 @@ function SignupPage({ onSignUp, onGuest }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   function handleSignUpSubmit(event) {
+    const formData = new FormData(event.currentTarget);
+
+    const password = formData.get("password");
+    const email = formData.get("email");
+
+    if (password.length < 6) {
+      event.preventDefault();
+
+      setErrorMessage("Password must be at least 6 characters");
+
+      return;
+    }
+
+    if (!email.includes("@")) {
+      event.preventDefault();
+
+      setErrorMessage("Please enter a valid email");
+
+      return;
+    }
+
+    setErrorMessage("");
+
     onSignUp(event);
+
     navigate("/home");
   }
 
   function handleGuestClick() {
     onGuest();
+
     navigate("/home");
   }
 
@@ -28,13 +57,16 @@ function SignupPage({ onSignUp, onGuest }) {
 
       <div className="auth-title">
         <span>{t.auth.joinCollection}</span>
+
         <h2>{t.auth.signupTitle}</h2>
+
         <p>{t.auth.signupText}</p>
       </div>
 
       <form onSubmit={handleSignUpSubmit} className="auth-form">
         <label>
           {t.auth.fullName}
+
           <input
             name="name"
             type="text"
@@ -45,6 +77,7 @@ function SignupPage({ onSignUp, onGuest }) {
 
         <label>
           {t.auth.email}
+
           <input
             name="email"
             type="email"
@@ -55,6 +88,7 @@ function SignupPage({ onSignUp, onGuest }) {
 
         <label>
           {t.auth.password}
+
           <input
             name="password"
             type="password"
@@ -62,6 +96,8 @@ function SignupPage({ onSignUp, onGuest }) {
             required
           />
         </label>
+
+        {errorMessage && <p className="auth-error-message">{errorMessage}</p>}
 
         <button type="submit" className="primary-auth-button">
           {t.auth.createAccount}

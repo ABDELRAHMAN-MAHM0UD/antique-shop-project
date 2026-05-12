@@ -64,11 +64,11 @@ function App() {
   const { t } = useLanguage();
 
   const [isLoggedIn, setIsLoggedIn] = useState(() =>
-    Boolean(localStorage.getItem("antiqueUser"))
+    Boolean(localStorage.getItem("antiqueUser")),
   );
 
   const [userName, setUserName] = useState(
-    () => localStorage.getItem("antiqueUser") || "Guest"
+    () => localStorage.getItem("antiqueUser") || "Guest",
   );
 
   const [products, setProducts] = useState([]);
@@ -122,12 +122,26 @@ function App() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email");
-    const name = email.split("@")[0];
 
-    localStorage.setItem("antiqueUser", name);
-    setUserName(name);
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const matchedUser = users.find(
+      (user) => user.email === email && user.password === password,
+    );
+
+    if (!matchedUser) {
+      showToast("Invalid email or password");
+      return;
+    }
+
+    localStorage.setItem("antiqueUser", matchedUser.name);
+
+    setUserName(matchedUser.name);
     setIsLoggedIn(true);
+
     showToast(t.messages.welcomeBack);
   }
 
@@ -135,11 +149,39 @@ function App() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const name = formData.get("name");
 
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    if (password.length < 6) {
+      showToast("Password must be at least 6 characters");
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const existingUser = users.find((user) => user.email === email);
+
+    if (existingUser) {
+      showToast("This email already exists");
+      return;
+    }
+
+    const newUser = {
+      name,
+      email,
+      password,
+    };
+
+    users.push(newUser);
+
+    localStorage.setItem("users", JSON.stringify(users));
     localStorage.setItem("antiqueUser", name);
+
     setUserName(name);
     setIsLoggedIn(true);
+
     showToast(t.messages.accountCreated);
   }
 
@@ -167,7 +209,7 @@ function App() {
         return currentItems.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       }
 
@@ -183,23 +225,23 @@ function App() {
         .map((item) =>
           item.id === productId
             ? { ...item, quantity: item.quantity - 1 }
-            : item
+            : item,
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   }
 
   function increaseQuantity(productId) {
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-      )
+        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
+      ),
     );
   }
 
   function removeFromCart(productId) {
     setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== productId)
+      currentItems.filter((item) => item.id !== productId),
     );
 
     showToast(t.messages.removedFromCart);
@@ -225,7 +267,7 @@ function App() {
     });
 
     setOrderMessage(
-      `Your order has been placed successfully. Order number: ${orderNumber}`
+      `Your order has been placed successfully. Order number: ${orderNumber}`,
     );
 
     setCartItems([]);
@@ -243,7 +285,7 @@ function App() {
 
   const cartTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -409,7 +451,7 @@ function App() {
           >
             {toast.message}
           </div>,
-          document.body
+          document.body,
         )}
     </BrowserRouter>
   );
