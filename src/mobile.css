@@ -1,0 +1,100 @@
+@media (max-width: 768px) {
+  .site-navbar {
+    padding: 14px 0;
+  }
+
+  .nav-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .nav-brand img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
+
+  .nav-brand span {
+    font-size: 1.7rem;
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .nav-menu a {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+  }
+
+  .nav-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .nav-actions button,
+  .nav-actions a {
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .hero-section,
+  .hero-content {
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  .hero-content h1 {
+    font-size: 3rem !important;
+    line-height: 1.1;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .hero-buttons button,
+  .hero-buttons a {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .products-grid,
+  .collections-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-card,
+  .collection-card {
+    width: 100%;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+  }
+}
