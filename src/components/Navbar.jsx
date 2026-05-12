@@ -1,8 +1,25 @@
 import { Link, NavLink } from "react-router-dom";
+import styled from "styled-components";
+
 import logoImg from "../assets/logo.png";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 
+const StyledCartButton = styled(Link)`
+  background: #d4af37;
+  color: black;
+  padding: 10px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+
+  &:hover {
+    transform: scale(1.05);
+    background: #f5e6c8;
+    color: black;
+  }
+`;
 
 function Navbar({ userName, cartCount, onLogout }) {
   const { t, toggleLanguage } = useLanguage();
@@ -13,6 +30,7 @@ function Navbar({ userName, cartCount, onLogout }) {
       <div className="container nav-inner">
         <Link className="nav-brand" to="/home">
           <img src={logoImg} alt="Antique Shop logo" />
+
           <span>
             Antique<b>Shop</b>
           </span>
@@ -27,11 +45,19 @@ function Navbar({ userName, cartCount, onLogout }) {
         </div>
 
         <div className="nav-actions">
-          <button type="button" className="theme-button" onClick={toggleTheme}>
+          <button
+            type="button"
+            className="theme-button"
+            onClick={toggleTheme}
+          >
             {isDarkTheme ? "☀ Light" : "🌙 Dark"}
           </button>
 
-          <button type="button" className="language-button" onClick={toggleLanguage}>
+          <button
+            type="button"
+            className="language-button"
+            onClick={toggleLanguage}
+          >
             {t.languageButton}
           </button>
 
@@ -39,11 +65,15 @@ function Navbar({ userName, cartCount, onLogout }) {
             {t.nav.hi}, {userName}
           </span>
 
-          <Link className="cart-nav-button" to="/cart">
+          <StyledCartButton to="/cart">
             {t.nav.cart} ({cartCount})
-          </Link>
+          </StyledCartButton>
 
-          <button type="button" className="logout-button" onClick={onLogout}>
+          <button
+            type="button"
+            className="logout-button"
+            onClick={onLogout}
+          >
             {t.nav.logout}
           </button>
         </div>
