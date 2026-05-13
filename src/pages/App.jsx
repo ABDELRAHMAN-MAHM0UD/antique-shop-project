@@ -21,6 +21,8 @@ import clockImg from "../assets/products/clock.png";
 import teaSetImg from "../assets/products/tea-set.png";
 import tableImg from "../assets/products/table.png";
 
+import { createProduct } from "../patterns/factory/ProductFactory";
+import CartObserver from "../patterns/observer/CartObserver";
 const productImages = {
   chair: chairImg,
   vase: vaseImg,
@@ -76,6 +78,7 @@ function App() {
   const [toast, setToast] = useState(null);
   const [orderMessage, setOrderMessage] = useState("");
   const [lastOrder, setLastOrder] = useState(null);
+  const cartObserver = new CartObserver();
 
   const toastTimer = useRef(null);
 
@@ -83,10 +86,12 @@ function App() {
     fetch("/data.json")
       .then((response) => response.json())
       .then((data) => {
-        const productsWithImages = data.map((product) => ({
-          ...product,
-          image: productImages[product.imageKey],
-        }));
+        const productsWithImages = data.map((product) =>
+          createProduct(product.category.toLowerCase(), {
+            ...product,
+            image: productImages[product.imageKey],
+          }),
+        );
 
         setProducts(productsWithImages);
       })
@@ -216,6 +221,7 @@ function App() {
       return [...currentItems, { ...product, quantity: 1 }];
     });
 
+    cartObserver.update(cartItems);
     showToast("Added to cart successfully");
   }
 
