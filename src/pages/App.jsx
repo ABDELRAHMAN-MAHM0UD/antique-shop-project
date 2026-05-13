@@ -21,6 +21,8 @@ import clockImg from "../assets/products/clock.png";
 import teaSetImg from "../assets/products/tea-set.png";
 import tableImg from "../assets/products/table.png";
 
+import { createProduct } from "../patterns/factory/ProductFactory";
+
 const productImages = {
   chair: chairImg,
   vase: vaseImg,
@@ -83,10 +85,12 @@ function App() {
     fetch("/data.json")
       .then((response) => response.json())
       .then((data) => {
-        const productsWithImages = data.map((product) => ({
-          ...product,
-          image: productImages[product.imageKey],
-        }));
+        const productsWithImages = data.map((product) =>
+          createProduct(product.category.toLowerCase(), {
+            ...product,
+            image: productImages[product.imageKey],
+          }),
+        );
 
         setProducts(productsWithImages);
       })
