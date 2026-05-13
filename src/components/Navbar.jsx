@@ -45,11 +45,7 @@ function Navbar({ userName, cartCount, onLogout }) {
         </div>
 
         <div className="nav-actions">
-          <button
-            type="button"
-            className="theme-button"
-            onClick={toggleTheme}
-          >
+          <button type="button" className="theme-button" onClick={toggleTheme}>
             {isDarkTheme ? "☀ Light" : "🌙 Dark"}
           </button>
 
@@ -61,19 +57,13 @@ function Navbar({ userName, cartCount, onLogout }) {
             {t.languageButton}
           </button>
 
-          <span>
-            {t.nav.hi}, {userName}
-          </span>
+          <div className="user-badge">👤 {userName}</div>
 
           <StyledCartButton to="/cart">
             {t.nav.cart} ({cartCount})
           </StyledCartButton>
 
-          <button
-            type="button"
-            className="logout-button"
-            onClick={onLogout}
-          >
+          <button type="button" className="logout-button" onClick={onLogout}>
             {t.nav.logout}
           </button>
         </div>

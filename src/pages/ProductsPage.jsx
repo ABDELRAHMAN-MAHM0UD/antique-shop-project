@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
+import {
+  sortByLowPrice,
+  sortByHighPrice,
+  sortByFragile,
+  sortFeatured,
+} from "../patterns/strategy/sortStrategies";
 
 function ProductsPage({ products, categories, addToCart }) {
   const [searchParams] = useSearchParams();
@@ -22,25 +28,33 @@ function ProductsPage({ products, categories, addToCart }) {
     let result = [...products];
 
     if (selectedCategory !== "All") {
-      result = result.filter((product) => product.category === selectedCategory);
+      result = result.filter(
+        (product) => product.category === selectedCategory,
+      );
     }
 
     if (searchText.trim()) {
       result = result.filter((product) =>
-        productName(product.name).toLowerCase().includes(searchText.toLowerCase())
+        productName(product.name)
+          .toLowerCase()
+          .includes(searchText.toLowerCase()),
       );
     }
 
-    if (sortType === "price-low") {
-      result.sort((a, b) => a.price - b.price);
-    }
+    const sortStrategies = {
+      featured: sortFeatured,
 
-    if (sortType === "price-high") {
-      result.sort((a, b) => b.price - a.price);
-    }
+      "price-low": sortByLowPrice,
 
-    if (sortType === "fragile") {
-      result.sort((a, b) => Number(b.fragile) - Number(a.fragile));
+      "price-high": sortByHighPrice,
+
+      fragile: sortByFragile,
+    };
+
+    const selectedStrategy = sortStrategies[sortType];
+
+    if (selectedStrategy) {
+      result = selectedStrategy(result);
     }
 
     return result;
