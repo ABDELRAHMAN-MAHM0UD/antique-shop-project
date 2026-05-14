@@ -30,6 +30,8 @@ const productImages = {
   teaSet: teaSetImg,
   table: tableImg,
 };
+    const orderNumber = `AS-${Date.now().toString().slice(-6)}`;
+
 
 function ProtectedRoute({ isLoggedIn, children }) {
   if (!isLoggedIn) {
@@ -264,7 +266,6 @@ function App() {
       return;
     }
 
-    const orderNumber = `AS-${Date.now().toString().slice(-6)}`;
 
     setLastOrder({
       orderNumber,
