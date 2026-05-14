@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
 };
 
 /**
- * [CUSTOM HOOK]
+ * [OBSERVER]
  * A shorthand way for components to access the cart context easily
  * without needing to import 'useContext' and 'CartContext' every time.
  */
