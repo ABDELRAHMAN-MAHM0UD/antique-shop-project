@@ -213,6 +213,7 @@ function App() {
       const existingItem = currentItems.find((item) => item.id === product.id);
 
       if (existingItem) {
+        cartObserver.notifyProductAdded(product, 1);
         return currentItems.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -220,10 +221,10 @@ function App() {
         );
       }
 
+      cartObserver.notifyProductAdded(product, 1);
       return [...currentItems, { ...product, quantity: 1 }];
     });
 
-    cartObserver.update(cartItems);
     showToast("Added to cart successfully");
   }
 
@@ -240,17 +241,29 @@ function App() {
   }
 
   function increaseQuantity(productId) {
+    const product = cartItems.find((item) => item.id === productId);
+    
     setCartItems((currentItems) =>
       currentItems.map((item) =>
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
       ),
     );
+
+    if (product) {
+      cartObserver.notifyProductAdded(product, 1);
+    }
   }
 
   function removeFromCart(productId) {
+    const product = cartItems.find((item) => item.id === productId);
+    
     setCartItems((currentItems) =>
       currentItems.filter((item) => item.id !== productId),
     );
+
+    if (product) {
+      cartObserver.notifyProductRemoved(product.name);
+    }
 
     showToast(t.messages.removedFromCart);
   }
