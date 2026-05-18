@@ -23,6 +23,17 @@ import tableImg from "../assets/products/table.png";
 
 import { createProduct } from "../patterns/factory/ProductFactory";
 import CartObserver from "../patterns/observer/CartObserver";
+import { validateCheckout } from "../patterns/chain/CheckoutValidationChain";
+import { decorateCartItems } from "../patterns/decorator/ProductDecorators";
+import {
+  AddToCartCommand,
+  ClearCartCommand,
+  DecreaseQuantityCommand,
+  IncreaseQuantityCommand,
+  RemoveFromCartCommand,
+} from "../patterns/command/CartCommand";
+import { createCheckoutState } from "../patterns/state/CheckoutState";
+
 const productImages = {
   chair: chairImg,
   vase: vaseImg,
@@ -30,8 +41,8 @@ const productImages = {
   teaSet: teaSetImg,
   table: tableImg,
 };
-    const orderNumber = `AS-${Date.now().toString().slice(-6)}`;
 
+const cartObserver = new CartObserver();
 
 function ProtectedRoute({ isLoggedIn, children }) {
   if (!isLoggedIn) {
@@ -80,9 +91,21 @@ function App() {
   const [toast, setToast] = useState(null);
   const [orderMessage, setOrderMessage] = useState("");
   const [lastOrder, setLastOrder] = useState(null);
-  const cartObserver = new CartObserver();
+
+  /*
+    [PATTERN: STATE]
+    We keep the checkout flow in a clear state:
+    idle -> validating -> success / failed.
+    This avoids using random booleans like isLoading, isSuccess, isFailed.
+  */
+  const [checkoutStateName, setCheckoutStateName] = useState("idle");
 
   const toastTimer = useRef(null);
+
+  const checkoutState = useMemo(
+    () => createCheckoutState(checkoutStateName),
+    [checkoutStateName],
+  );
 
   useEffect(() => {
     fetch("/data.json")
@@ -205,74 +228,128 @@ function App() {
     setUserName("Guest");
     setCartItems([]);
     setLastOrder(null);
+    setCheckoutStateName("idle");
     showToast(t.messages.loggedOut);
   }
 
+  /*
+    [PATTERN: COMMAND]
+    Every cart action is wrapped inside a command object.
+    App.jsx only runs the command, and the command knows how to change cartItems.
+    This keeps add/remove/increase/decrease logic organized and reusable.
+  */
+  function runCartCommand(command) {
+    setCartItems((currentItems) => command.execute(currentItems));
+  }
+
   function addToCart(product) {
-    setCartItems((currentItems) => {
-      const existingItem = currentItems.find((item) => item.id === product.id);
+    const command = new AddToCartCommand(product);
 
-      if (existingItem) {
-        return currentItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
+    runCartCommand(command);
 
-      return [...currentItems, { ...product, quantity: 1 }];
-    });
-
-    cartObserver.update(cartItems);
+    cartObserver.notifyProductAdded(product, 1);
     showToast("Added to cart successfully");
   }
 
   function decreaseQuantity(productId) {
-    setCartItems((currentItems) =>
-      currentItems
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item,
-        )
-        .filter((item) => item.quantity > 0),
-    );
+    const command = new DecreaseQuantityCommand(productId);
+
+    runCartCommand(command);
   }
 
   function increaseQuantity(productId) {
-    setCartItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-    );
+    const product = cartItems.find((item) => item.id === productId);
+    const command = new IncreaseQuantityCommand(productId);
+
+    runCartCommand(command);
+
+    if (product) {
+      cartObserver.notifyProductAdded(product, 1);
+    }
   }
 
   function removeFromCart(productId) {
-    setCartItems((currentItems) =>
-      currentItems.filter((item) => item.id !== productId),
-    );
+    const product = cartItems.find((item) => item.id === productId);
+    const command = new RemoveFromCartCommand(productId);
+
+    runCartCommand(command);
+
+    if (product) {
+      cartObserver.notifyProductRemoved(product.name);
+    }
 
     showToast(t.messages.removedFromCart);
   }
 
   function clearCart() {
-    setCartItems([]);
+    const command = new ClearCartCommand();
+
+    runCartCommand(command);
     showToast(t.messages.cartCleared);
   }
 
   function handleCheckout(orderDetails = {}) {
-    if (cartItems.length === 0) {
-      showToast(t.messages.emptyCart);
+    if (!checkoutState.canCheckout()) {
+      showToast(checkoutState.getMessage());
       return;
     }
 
+    setCheckoutStateName("validating");
 
-    setLastOrder({
+    const orderData = {
+      cartItems,
+      delivery: orderDetails.delivery || null,
+      paymentMethod: orderDetails.paymentMethod || "cash",
+    };
+
+    /*
+      [PATTERN: CHAIN OF RESPONSIBILITY]
+      Checkout validation is split into multiple validation steps.
+      Each step checks one responsibility, like cart, stock, payment, and delivery.
+    */
+    const validation = validateCheckout(orderData);
+
+    if (!validation.isValid) {
+      setCheckoutStateName("failed");
+      showToast(validation.message);
+      return;
+    }
+
+    /*
+      [PATTERN: DECORATOR]
+      We decorate cart items at checkout time with extra services.
+      Example: fragile packaging or luxury insurance.
+      The original cart item stays clean, and the decorated item has final price.
+    */
+    const decoratedItems = decorateCartItems(cartItems);
+
+    const subtotal = cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    const total = decoratedItems.reduce(
+      (sum, item) => sum + item.finalTotal,
+      0,
+    );
+
+    const servicesTotal = total - subtotal;
+    const orderNumber = `AS-${Date.now().toString().slice(-6)}`;
+
+    const order = {
       orderNumber,
-      total: cartTotal,
-      ...orderDetails,
-    });
+      items: decoratedItems,
+      subtotal,
+      servicesTotal,
+      total,
+      delivery: orderData.delivery,
+      paymentMethod: orderData.paymentMethod,
+      state: "success",
+      createdAt: new Date().toLocaleString(),
+    };
 
+    setCheckoutStateName("success");
+    setLastOrder(order);
     setOrderMessage(
       `Your order has been placed successfully. Order number: ${orderNumber}`,
     );
@@ -283,10 +360,12 @@ function App() {
 
   function closeOrderMessage() {
     setOrderMessage("");
+    setCheckoutStateName("idle");
   }
 
   const categories = useMemo(() => {
     const uniqueCategories = products.map((product) => product.category);
+
     return ["All", ...new Set(uniqueCategories)];
   }, [products]);
 
@@ -434,6 +513,16 @@ function App() {
                 <div>
                   <span>Order Number</span>
                   <strong>{lastOrder.orderNumber}</strong>
+                </div>
+
+                <div>
+                  <span>Subtotal</span>
+                  <strong>{lastOrder.subtotal} EGP</strong>
+                </div>
+
+                <div>
+                  <span>Extra Services</span>
+                  <strong>{lastOrder.servicesTotal} EGP</strong>
                 </div>
 
                 <div>
